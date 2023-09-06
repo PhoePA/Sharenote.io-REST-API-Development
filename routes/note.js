@@ -14,8 +14,8 @@ router.post(
     .trim()
     .isLength({ min: 3 })
     .withMessage("Title must have at least 3 characters!")
-    .isLength({ max: 20 })
-    .withMessage("Title is too long, please don't exceed 20 characters!"),
+    .isLength({ max: 100 })
+    .withMessage("Title is too long, please don't exceed 100 characters!"),
   body("content")
     .trim()
     .isLength({ min: 2 })
@@ -25,5 +25,9 @@ router.post(
   noteController.createNotes
 );
 
+// GET / notes/ :id
 router.get("/notes/:id", noteController.getNote);
+
+// delete note
+router.delete("/delete/:id", noteController.deleteNote);
 module.exports = router;
