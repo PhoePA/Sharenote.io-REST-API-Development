@@ -43,4 +43,25 @@ router.post(
   authController.register
 );
 
+router.post(
+  "/login",
+  [
+    body("email")
+      .isEmail()
+      .withMessage("Plese Enter a Valid Email Address!"),
+    /*  .custom((value, { req }) => {
+        return User.findOne({ email: value }).then((userDoc) => {
+          if (!userDoc) {
+            return Promise.reject("Email does not exist!");
+          }
+        });
+      }),*/
+    body("password")
+      .trim()
+      .isLength({ min: 5 })
+      .withMessage("Password is Incorrect!"),
+  ],
+  authController.login
+);
+
 module.exports = router;
