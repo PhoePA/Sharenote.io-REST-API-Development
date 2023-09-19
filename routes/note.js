@@ -4,12 +4,14 @@ const router = express.Router();
 const { body } = require("express-validator");
 const noteController = require("../controllers/note");
 
+const authMiddleware = require("../middlewares/is-auth");
 //GET method
 router.get("/notes", noteController.getNotes);
 
 // POST method
 router.post(
   "/create-notes",
+  authMiddleware,
   body("title")
     .trim()
     .isLength({ min: 3 })
@@ -29,11 +31,11 @@ router.post(
 router.get("/notes/:id", noteController.getNote);
 
 // delete note
-router.delete("/delete/:id", noteController.deleteNote);
+router.delete("/delete/:id", authMiddleware, noteController.deleteNote);
 
 // GET / edit / :id
-router.get("/edit/:id", noteController.getOldNote);
+router.get("/edit/:id", authMiddleware, noteController.getOldNote);
 
 // POST / edit
-router.put("/edit", noteController.updateNote);
+router.put("/edit", authMiddleware, noteController.updateNote);
 module.exports = router;

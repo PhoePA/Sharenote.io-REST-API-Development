@@ -1,8 +1,11 @@
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const User = require("../models/user");
 const { Error } = require("mongoose");
+
 exports.register = (req, res, next) => {
   const errors = validationResult(req);
 
@@ -57,13 +60,19 @@ exports.login = async (req, res, next) => {
       });
     }
     const isMatch = bcrypt.compareSync(password, userDoc.password);
-    console.log(isMatch);
+    // console.log(isMatch);
     if (!isMatch) {
       return res.status(401).json({
         message: "Wrong User credential!",
       });
     }
-    return res.status(200).json({ message: "login success" });
+    const token = jwt.sign(
+      { email: userDoc.email, userId: userDoc._id },
+      process.env.JWT_KEY,
+      { expiresIn: "1h" }
+    );
+
+    return res.status(200).json({token,userId: userDoc._id})
   } catch (err) {
     console.log(err);
     return res.status(400).json({
