@@ -3,6 +3,7 @@ const router = express.Router();
 const { body } = require("express-validator");
 
 const authController = require("../controllers/auth");
+const authMiddleware = require("../middlewares/is-auth");
 const User = require("../models/user");
 // POST / register
 router.post(
@@ -46,9 +47,7 @@ router.post(
 router.post(
   "/login",
   [
-    body("email")
-      .isEmail()
-      .withMessage("Plese Enter a Valid Email Address!"),
+    body("email").isEmail().withMessage("Plese Enter a Valid Email Address!"),
     /*  .custom((value, { req }) => {
         return User.findOne({ email: value }).then((userDoc) => {
           if (!userDoc) {
@@ -64,4 +63,6 @@ router.post(
   authController.login
 );
 
+// GET / status
+router.get("/status", authController.checkStatus);
 module.exports = router;

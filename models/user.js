@@ -16,10 +16,7 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    notes: {
-      type: Schema.Types.ObjectId,
-      ref: "Note",
-    },
+    
   },
   {
     timestamps: true,

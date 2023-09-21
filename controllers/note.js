@@ -14,14 +14,14 @@ exports.getNotes = (req, res, next) => {
     .countDocuments()
     .then((counts) => {
       totalNotes = counts;
-      totalPages = Math.ceil(totalNotes / perPage)
+      totalPages = Math.ceil(totalNotes / perPage);
       return Note.find()
         .sort({ createdAt: -1 })
         .skip((currentPage - 1) * perPage)
         .limit(perPage);
     })
     .then((notes) => {
-      return res.status(200).json({notes, totalNotes, totalPages});
+      return res.status(200).json({ notes, totalNotes, totalPages });
     })
     .catch((err) => {
       console.log(err);
@@ -47,6 +47,7 @@ exports.createNotes = (req, res, next) => {
     title,
     content,
     cover_image: cover_image ? cover_image.path : "",
+    author: req.userId,
   })
     .then((_) => {
       return res.status(201).json({
@@ -65,6 +66,7 @@ exports.getNote = (req, res, next) => {
   const { id } = req.params;
 
   Note.findById(id)
+    .populate("author", "username")
     .then((note) => {
       res.status(200).json(note);
     })
@@ -80,7 +82,10 @@ exports.deleteNote = (req, res, next) => {
   const { id } = req.params;
   Note.findById(id)
     .then((note) => {
-      unlink(note.cover_image);
+      if (note.cover_image) {
+        unlink(note.cover_image);
+      }
+
       return Note.findByIdAndRemove(id).then(() => {
         return res.status(204).json({
           message: "Note was deleted successfully!",
@@ -118,7 +123,9 @@ exports.updateNote = (req, res, next) => {
       note.title = title;
       note.content = content;
       if (cover_image) {
-        unlink(note.cover_image);
+        if (note.cover_image) {
+          unlink(note.cover_image);
+        }
         note.cover_image = cover_image.path;
       }
       return note.save();

@@ -12,6 +12,7 @@ const isAuth = (req, res, next) => {
       return res.status(401).json({ message: "User is not Authenticated!" });
     }
     req.userId = tokenMatch.userId;
+    // console.log(`I am middleware ${tokenMatch.userId}`);
     next();
   } catch (err) {
     return res.status(401).json({ message: "User is not Authenticated!" });
